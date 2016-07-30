@@ -1,7 +1,5 @@
 <!doctype html>
-<!--[if IE 8]><html class="ie8 lt-ie10"><![endif]-->
-<!--[if IE 9]><html class="ie9 lt-ie10"><![endif]-->
-<!--[if gt IE 9]><!--><html lang="en"><!--<![endif]-->
+<html lang="en" ng-app="factr">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,8 +12,7 @@
     <link rel="stylesheet" href="css/app.css">
     <title>Slideout tests</title>
   </head>
-  <body>
-
+   <body ng-controller="AppCtrl">
     <nav id="menu" class="menu">
       <a href="https://github.com/mango/slideout" target="_blank">
         <header class="menu-header">
@@ -26,9 +23,9 @@
       <section class="menu-section">
         <h3 class="menu-section-title">Header</h3>
         <ul class="menu-section-list">
-          <li><a href="#" target="_blank">Entry 1</a></li>
-          <li><a href="#" target="_blank">Entry 2</a></li>
-          <li><a href="#" target="_blank">Entry 3</a></li>
+          <li ng-repeat="c in categories">
+            <a href="#" target="_blank">{{c.name}}</a>
+          </li>
         </ul>
       </section>
     </nav>
@@ -44,7 +41,7 @@
       </section>
 
       <section class="box">
-          <p class="text-center">right next to you is the highest fine rate carparking spot in the area</p>
+        <p class="text-center">{{fact}}</p>
       </section>
 
       <footer class="panel-footer">
@@ -52,8 +49,11 @@
       </footer>
     </main>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
     <script src="js/slideout.min.js"></script>
     <script src="js/app.js"></script>
+
     <script>
       window.onload = function() {
         document.querySelector('.js-slideout-toggle').addEventListener('click', function() {

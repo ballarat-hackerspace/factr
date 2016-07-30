@@ -123,30 +123,10 @@ a {
  * Boxes
  */
 .box {
-  border: 1px solid #4b5;
   border-radius: 4px;
   text-align: left;
-  margin: 50px 10px;
+  margin: 48px 8px;
   position: relative;
-}
-
-.box:before,
-.box:after {
-  content: ' ';
-  display: inline-block;
-  width: 1px;
-  height: 50px;
-  border-left: 1px solid #4b5;
-  position: absolute;
-  left: 50%;
-}
-
-.box:before {
-  top: -50px;
-}
-
-.box:after {
-  bottom: -50px;
 }
 
 .box-title {
