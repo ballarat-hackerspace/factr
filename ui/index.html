@@ -25,7 +25,10 @@
         <h3 class="menu-section-title">Categories</h3>
         <ul class="menu-section-list">
           <li ng-repeat="c in categories">
-            <a href="" target="_blank">{{c.plural}}</a> <toggle-switch ng-model="c.state"><toggle-switch>
+            <div class="switch">
+              <toggle-switch ng-model="c.state" on-label="I" off-label="O"></toggle-switch>
+              <a href="" target="_blank">{{c.plural}}</a>
+            </div>
           </li>
         </ul>
       </section>
