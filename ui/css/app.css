@@ -124,9 +124,15 @@ a {
  */
 .box {
   border-radius: 4px;
-  text-align: left;
+  text-align: center;
   margin: 48px 8px;
   position: relative;
+}
+
+.fact {
+    font-size: 24px;
+    line-height: 28px;
+    text-align: center;
 }
 
 .box-title {
@@ -142,6 +148,23 @@ a {
   padding:20px;
   background-color: #f8f8f8;
 }
+
+.tweet {
+  border: 2px solid #4099ff;
+  border-radius: 50%;
+  display: inline-block;
+  padding: 8px;
+  height: 28px;
+  width: 28px;
+}
+
+.tweet .fa {
+  color: #4099ff;
+  margin-left: 2px;
+  margin-top: 6px;
+}
+
+
 
 /**
  * Medium Screens
