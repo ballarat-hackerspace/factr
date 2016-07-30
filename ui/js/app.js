@@ -9,12 +9,18 @@ var slideout = new Slideout({
   padding: 300
 });
 
+// animation states
+window['radar'] = {
+  show_sweep: true,
+  markers: []
+};
+
 angular.module('factr', ['toggle-switch'])
   .controller('AppCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
     var url = 'http://52.62.213.165/factr/api/'; //services/categories
 
     $scope.categories = [];
-    $scope.fact = "right next to you is the highest fine rate carparking spot in the area";
+    //$scope.fact = "right next to you is the highest fine rate carparking spot in the area";
 
     // initialise categories
     $http.get(url+'services/categories').then(function(response) {
@@ -30,44 +36,87 @@ angular.module('factr', ['toggle-switch'])
       console.error(response);
     });
 
+    $scope.sayFact = function(message) {
+      var msg = new SpeechSynthesisUtterance();
+      var voices = window.speechSynthesis.getVoices();
+      msg.voice = voices[10]; // Note: some voices don't support altering params
+      msg.voiceURI = 'native';
+      msg.volume = 1; // 0 to 1
+      msg.rate = 1;   // 0.1 to 10
+      msg.pitch = 1;  // 0 to 2
+      msg.text = message;
+      msg.lang = 'en-US';
+
+      msg.onend = function(e) {
+          console.log('Finished in ' + event.elapsedTime + ' seconds.');
+      };
+
+      speechSynthesis.speak(msg);
+    };
+
+
     $scope.nextFact = function() {
       console.debug("Collecting position ...");
+      window.radar.show_sweep = true;
+
       navigator.geolocation.getCurrentPosition(function(position) {
         // set default state to on
         var categories = [];
+
         angular.forEach($scope.categories, function(v) {
           if (v.state) {
             categories.push(v.id);
           }
         });
 
+        var config = {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        };
+
+        var max_results = Math.round(Math.random() * 5) + 3;
+
         var q = {
-          categories: categories,
-          lat: position.coords.latitude,
-          lon: position.coords.longitude,
-          radius: 1000,
-          max_results: 10,
+          categories:  categories,
+          lat:         position.coords.latitude,
+          lon:         position.coords.longitude,
+          radius:      1000,
+          max_results: max_results,
           time_period: 80
-        }
+        };
 
         console.debug("Sending query: ", q);
-        $http.post(url+'json/random').then(function(response) {
+
+        $http({
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          url:    url+'json/random',
+          data: "request="+JSON.stringify(q)
+        }).then(function(response) {
+          window.radar.show_sweep = false;
           console.debug(response);
+
+          $scope.facts = response.data.filter(function(v) { return Object.prototype.toString.call(v) === '[object Object]'; });
+          console.debug($scope.facts);
+
+          // build fake markers
+          buildMarkers($scope.facts.length);
         },
         function(response) {
           console.error(response);
+          window.radar.show_sweep = false;
         });
       },
       function(error) {
         console.error("Failed to get location: ", error);
+        window.radar.show_sweep = false;
       });
-    };
+    }
   }]);
 
-
-
 var radar = document.getElementById('radar'),
-    diameter = 320,
+    diameter = 300,
     radius = diameter / 2,
     padding = 14;
 
@@ -82,45 +131,26 @@ var dToR = function(degrees) {
   return degrees * (Math.PI / 180);
 };
 
-var facts = [
-  {
-    "fact": "right next to you is the highest fine rate carparking spot in the area",
-    "category": "Carpark",
-    "long": 141.12313131,
-    "lat": -37.12313131,
-    "quip": "doesn't that make you think?",
-    "data_attributes": {
-      "fine": "2100",
-      "date": "30/7/2016",
-    }
-  },
-  {
-    "fact": "The lamp next to you has an 100 Watt globe",
-    "category": "Lights",
-    "long": 141.22313131,
-    "lat": -37.22313131,
-    "quip": "well I'll be!",
-    "sound": "http://somewhere.com/playme1.wav",
-    "data_attributes": {
-      "watts": "2100",
-      "serviced": "30/7/2016",
-    }
+var markers = [];
+
+var buildMarkers = function(size) {
+  markers = [];
+
+  for (var i=0; i<size; i++) {
+    var rad = dToR(Math.random() * 360);
+    var dist = Math.random() * radius;
+
+    var x = Math.cos(rad) * dist;
+    var y = Math.sin(rad) * dist;
+
+    markers.push({x: x, y: y});
   }
-];
-
-var markers = [
-  { x: -100, y: 80},
-  { x: 100, y: -50},
-  { x: 60, y: 20},
-];
-
-var buildFactMarkers = function(facts) {
-};
+}
 
 var sweepAngle = 270,
     sweepSize = 2,
-    sweepSpeed = 1.2,
-    rings = 2,
+    sweepSpeed = 1.4,
+    rings = 3,
     hueStart = 120,
     hueEnd = 170,
     hueDiff = Math.abs(hueEnd - hueStart),
@@ -182,5 +212,10 @@ ctx.draw = function(){
 
   renderRings();
   renderMarkers();
-  renderSweep();
+
+  if (window.radar.show_sweep) {
+    renderSweep();
+  }
 };
+
+

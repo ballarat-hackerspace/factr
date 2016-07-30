@@ -39,9 +39,7 @@
         <button class="btn-hamburger js-slideout-toggle">
           <i class="fa fa-lg fa-fw fa-navicon"></i>
         </button>
-        <button class="" ng-click="nextFact()">
-          <i class="fa fa-lg fa-fw fa-cogs"></i>
-        </button>
+        <span class="panel-header-title" ng-click="nextFact()">factr</span>
       </header>
 
       <section id="radar">
@@ -52,7 +50,7 @@
       </section>
 
       <footer class="panel-footer">
-        <div class="tweet">
+        <div class="tweet" ng-click="sayFact(fact)">
           <i class="fa fa-lg fa-fw fa-twitter"></i>
         </div>
       </footer>

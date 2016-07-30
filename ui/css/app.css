@@ -43,13 +43,22 @@ a {
 
 .menu-header {
   border-bottom: 1px solid #2a2d2f;
-  padding: 20px;
-  font-size: 24px;
+  padding: 16px;
   background-size: 32px;
 }
 
+.panel-header-title {
+  border: none;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.panel-header-title,
 .menu-header-title {
   font-weight: 400;
+  font-size: 32px;
+  line-height: 32px;
   letter-spacing: 0.5px;
   margin: 0;
 }
@@ -101,7 +110,7 @@ a {
  * Header
  */
 .panel-header {
-  margin: 84px auto 48px;
+  margin: 64px auto 48px;
 }
 
 .title {
