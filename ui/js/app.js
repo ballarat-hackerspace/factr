@@ -4,8 +4,9 @@ var openEvent = false;
 var beforecloseEvent = false;
 var closeEvent = false;
 var slideout = new Slideout({
-  'panel': doc.getElementById('panel'),
-  'menu': doc.getElementById('menu')
+  panel: doc.getElementById('panel'),
+  menu: doc.getElementById('menu'),
+  padding: 300
 });
 
 angular.module('factr', ['toggle-switch'])

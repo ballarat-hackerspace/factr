@@ -119,7 +119,7 @@ a {
   border: none;
   position: absolute;
   top: 16px;
-  left: 16px;
+  left: 8px;
   outline:none;
   background: transparent;
 }
@@ -227,7 +227,7 @@ a {
   bottom: 0;
   right: 0;
   z-index: 0;
-  width: 256px;
+  width: 300px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   display: none;
