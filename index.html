@@ -1,0 +1,69 @@
+<!doctype html>
+<!--[if IE 8]><html class="ie8 lt-ie10"><![endif]-->
+<!--[if IE 9]><html class="ie9 lt-ie10"><![endif]-->
+<!--[if gt IE 9]><!--><html lang="en"><!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="cleartype" content="on">
+    <meta name="MobileOptimized" content="320">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/app.css">
+    <title>Slideout tests</title>
+  </head>
+  <body>
+
+    <nav id="menu" class="menu">
+      <a href="https://github.com/mango/slideout" target="_blank">
+        <header class="menu-header">
+          <span class="menu-header-title">factr</span>
+        </header>
+      </a>
+
+      <section class="menu-section">
+        <h3 class="menu-section-title">Header</h3>
+        <ul class="menu-section-list">
+          <li><a href="#" target="_blank">Entry 1</a></li>
+          <li><a href="#" target="_blank">Entry 2</a></li>
+          <li><a href="#" target="_blank">Entry 3</a></li>
+        </ul>
+      </section>
+    </nav>
+
+    <main id="panel" class="panel">
+      <header class="panel-header">
+        <button class="btn-hamburger js-slideout-toggle">
+          <i class="fa fa-lg fa-fw fa-navicon"></i>
+        </button>
+      </header>
+
+      <section class="radar">
+      </section>
+
+      <section class="box">
+          <p class="text-center">right next to you is the highest fine rate carparking spot in the area</p>
+      </section>
+
+      <footer class="panel-footer">
+        <i class="fa fa-lg fa-fw fa-twitter"></i>
+      </footer>
+    </main>
+
+    <script src="js/slideout.min.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      window.onload = function() {
+        document.querySelector('.js-slideout-toggle').addEventListener('click', function() {
+          slideout.toggle();
+        });
+
+        document.querySelector('.menu').addEventListener('click', function(eve) {
+          if (eve.target.nodeName === 'A') { slideout.close(); }
+        });
+      };
+    </script>
+  </body>
+</html>
