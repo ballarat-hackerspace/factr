@@ -163,7 +163,7 @@ angular.module('factr', ['toggle-switch'])
 
 
     $timeout(function() {
-      $scope.fetchFacts(-37.5, 143.8);
+      $scope.fetchFacts(-37.5653612, 143.8565467);
     }, 1000);
   }]);
 
