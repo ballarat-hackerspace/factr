@@ -17,8 +17,8 @@ window['radar'] = {
 
 angular.module('factr', ['toggle-switch'])
   .controller('AppCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
-    var url   = 'http://52.62.213.165/factr/api/'; //services/categories
-    var url_s = 'http://52.62.213.165:5000/create_sentence';
+    var url   = 'https://52.62.213.165/factr/api/'; //services/categories
+    var url_s = 'https://52.62.213.165:5000/create_sentence';
 
     $scope.categories = {};
     $scope.facts = [];
