@@ -17,43 +17,57 @@ window['radar'] = {
 
 angular.module('factr', ['toggle-switch'])
   .controller('AppCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
-    var url = 'http://52.62.213.165/factr/api/'; //services/categories
+    var url   = 'http://52.62.213.165/factr/api/'; //services/categories
+    var url_s = 'http://52.62.213.165:5000/create_sentence';
 
-    $scope.categories = [];
-    //$scope.fact = "right next to you is the highest fine rate carparking spot in the area";
+    $scope.categories = {};
+    $scope.facts = [];
+
+    $scope.active_fact = -1;
 
     // initialise categories
     $http.get(url+'services/categories').then(function(response) {
       console.debug(response);
-      $scope.categories = response.data;
 
       // set default state to on
-      angular.forEach($scope.categories, function(v) {
+      angular.forEach(response.data, function(v) {
         v['state'] = true;
+        $scope.categories[v.id] = v;
       });
+
+      console.debug($scope.categories);
     },
     function(response) {
       console.error(response);
     });
 
     $scope.sayFact = function(message) {
-      var msg = new SpeechSynthesisUtterance();
-      var voices = window.speechSynthesis.getVoices();
-      msg.voice = voices[10]; // Note: some voices don't support altering params
-      msg.voiceURI = 'native';
-      msg.volume = 1; // 0 to 1
-      msg.rate = 1;   // 0.1 to 10
-      msg.pitch = 1;  // 0 to 2
-      msg.text = message;
-      msg.lang = 'en-US';
+      if ($scope.active_fact !== -1) {
+        var msg = new SpeechSynthesisUtterance();
+        var voices = window.speechSynthesis.getVoices();
+        msg.voice = voices[10]; // Note: some voices don't support altering params
+        msg.voiceURI = 'native';
+        msg.volume = 1; // 0 to 1
+        msg.rate = 1;   // 0.1 to 10
+        msg.pitch = 1;  // 0 to 2
+        msg.text = $scope.facts[$scope.active_fact].fact;
+        msg.lang = 'en-US';
 
-      msg.onend = function(e) {
-          console.log('Finished in ' + event.elapsedTime + ' seconds.');
-      };
+        msg.onend = function(e) {
+            console.log('Finished in ' + event.elapsedTime + ' seconds.');
+        };
 
-      speechSynthesis.speak(msg);
+        speechSynthesis.speak(msg);
+      }
     };
 
+    $scope.getFact = function() {
+      if ($scope.active_fact !== -1) {
+        return $scope.facts[$scope.active_fact].fact;
+      }
+
+      return '';
+    };
 
     $scope.nextFact = function() {
       console.debug("Collecting position ...");
@@ -97,11 +111,40 @@ angular.module('factr', ['toggle-switch'])
           window.radar.show_sweep = false;
           console.debug(response);
 
+          $scope.active_fact = -1;
           $scope.facts = response.data.filter(function(v) { return Object.prototype.toString.call(v) === '[object Object]'; });
-          console.debug($scope.facts);
+
+          angular.forEach($scope.facts, function(v, k) {
+            // decorate category
+            v.category = $scope.categories[v.category];
+          });
+
+          // decorate sentence 
+          $http({
+            method:   'POST',
+            dataType: 'json',
+            headers:  {'Content-Type': 'application/json; charset=UTF-8'},
+            url:      url_s,
+            data:     $scope.facts
+          }).then(function(response){
+            // store and redirect
+            angular.forEach(response.data, function(v, k) {
+              $scope.facts[k]['fact'] = v.text;
+            });
+
+            $timeout(function() {
+              $scope.sayFact();
+            }, 2000);
+          },
+          function(response){
+            console.debug(response);
+          });
+
+          $scope.active_fact = 0;
 
           // build fake markers
           buildMarkers($scope.facts.length);
+          setActiveMarker($scope.active_fact);
         },
         function(response) {
           console.error(response);
@@ -143,7 +186,15 @@ var buildMarkers = function(size) {
     var x = Math.cos(rad) * dist;
     var y = Math.sin(rad) * dist;
 
-    markers.push({x: x, y: y});
+    markers.push({x: x, y: y, active: false});
+  }
+}
+
+var setActiveMarker = function(a) {
+  if (a<markers.length) {
+    for (var i=0, l=markers.length; i<l; i++) {
+      markers[i].active = (i == a);
+    }
   }
 }
 
@@ -176,9 +227,16 @@ var renderMarkers = function() {
   for(var i=0, l=markers.length; i<l; i++) {
     ctx.beginPath();
     ctx.arc(radius+markers[i].x, radius+markers[i].y, 4, 0, TWO_PI, false);
-    ctx.fillStyle = '#660000';
+
+    if (markers[i].active) {
+      ctx.fillStyle = '#000066';
+      ctx.strokeStyle = '#000044';
+    } else {
+      ctx.fillStyle = '#660000';
+      ctx.strokeStyle = '#440000';
+    }
+
     ctx.fill();
-    ctx.strokeStyle = '#440000';
     ctx.lineWidth = 1;
     ctx.stroke();
   };
