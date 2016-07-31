@@ -35,7 +35,7 @@ reply_forms_count.append("Despite what the government might say, there are {valu
 reply_forms_count.append("I walked around counting on my fingers and there are {value} {plural} nearby. {quip}")
 reply_forms_count.append("If you wandered {distance} metres you'd find the closest {singular}. I'm not telling you which direction though. {quip}")
 reply_forms_count.append("Rumour has it that {value} {plural} are lurking nearby. {quip}")
-reply_forms_count.append("My uncles wifes hairdressers adughters teachers kitten said that one of the {value} {plural} around here is awesome. {quip}")
+reply_forms_count.append("My uncles wifes hairdressers daughters teachers kitten said that one of the {value} {plural} around here is awesome. {quip}")
 
 reply_forms_count_time = []
 reply_forms_count_time.append("There's a {singular} just {distance} metres from you. {quip}")
@@ -44,7 +44,7 @@ reply_forms_count_time.append("Despite what the government might say, there are 
 
 reply_forms_common = []
 reply_forms_common.append("The most common {value_name} of a {singular} around here is {value}. {quip}")
-reply_forms_common.append("Of all the {singular} are here, {value} is the most common {value_name}. {quip}")
+reply_forms_common.append("Of all the {singular} around here, {value} is the most common {value_name}. {quip}")
 
 def generate_sentence(input_data):
 
