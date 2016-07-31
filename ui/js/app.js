@@ -69,92 +69,102 @@ angular.module('factr', ['toggle-switch'])
       return '';
     };
 
-    $scope.nextFact = function() {
-      console.debug("Collecting position ...");
+    $scope.fetchFacts = function(lat, lon) {
       window.radar.show_sweep = true;
 
-      navigator.geolocation.getCurrentPosition(function(position) {
-        // set default state to on
-        var categories = [];
+      // set default state to on
+      var categories = [];
 
-        angular.forEach($scope.categories, function(v) {
-          if (v.state) {
-            categories.push(v.id);
-          }
+      angular.forEach($scope.categories, function(v) {
+        if (v.state) {
+          categories.push(v.id);
+        }
+      });
+
+      var config = {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      };
+
+      var max_results = Math.round(Math.random() * 5) + 3;
+
+      var q = {
+        categories:  categories,
+        lat:         lat,
+        lon:         lon,
+        radius:      1000,
+        max_results: max_results,
+        time_period: 80
+      };
+
+      console.debug("Sending query: ", q);
+
+      $http({
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        url:    url+'json/random',
+        data: "request="+JSON.stringify(q)
+      }).then(function(response) {
+        window.radar.show_sweep = false;
+        console.debug(response);
+
+        $scope.active_fact = -1;
+        $scope.facts = response.data.filter(function(v) { return Object.prototype.toString.call(v) === '[object Object]'; });
+
+        angular.forEach($scope.facts, function(v, k) {
+          // decorate category
+          v.category = $scope.categories[v.category];
         });
 
-        var config = {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        };
-
-        var max_results = Math.round(Math.random() * 5) + 3;
-
-        var q = {
-          categories:  categories,
-          lat:         position.coords.latitude,
-          lon:         position.coords.longitude,
-          radius:      1000,
-          max_results: max_results,
-          time_period: 80
-        };
-
-        console.debug("Sending query: ", q);
-
+        // decorate sentence 
         $http({
-          method: 'POST',
+          method:   'POST',
+          url:      url+'json/sentence',
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-          url:    url+'json/random',
-          data: "request="+JSON.stringify(q)
-        }).then(function(response) {
-          window.radar.show_sweep = false;
-          console.debug(response);
-
-          $scope.active_fact = -1;
-          $scope.facts = response.data.filter(function(v) { return Object.prototype.toString.call(v) === '[object Object]'; });
-
-          angular.forEach($scope.facts, function(v, k) {
-            // decorate category
-            v.category = $scope.categories[v.category];
+          data: "request="+JSON.stringify($scope.facts)
+        }).then(function(response){
+          // store and redirect
+          angular.forEach(response.data, function(v, k) {
+            $scope.facts[k]['fact'] = v.text;
           });
 
-          // decorate sentence 
-          $http({
-            method:   'POST',
-            url:      url+'json/sentence',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            data: "request="+JSON.stringify($scope.facts)
-          }).then(function(response){
-            // store and redirect
-            angular.forEach(response.data, function(v, k) {
-              $scope.facts[k]['fact'] = v.text;
-            });
-
-            $timeout(function() {
-              $scope.sayFact();
-            }, 2000);
-          },
-          function(response){
-            console.debug(response);
-          });
-
-          $scope.active_fact = 0;
-
-          // build fake markers
-          buildMarkers($scope.facts.length);
-          setActiveMarker($scope.active_fact);
+          $timeout(function() {
+            $scope.sayFact();
+          }, 1000);
         },
-        function(response) {
-          console.error(response);
-          window.radar.show_sweep = false;
+        function(response){
+          console.debug(response);
         });
+
+        $scope.active_fact = 0;
+
+        // build fake markers
+        buildMarkers($scope.facts.length);
+        setActiveMarker($scope.active_fact);
+      },
+      function(response) {
+        console.error(response);
+        window.radar.show_sweep = false;
+      });
+    };
+
+    $scope.nextFact = function() {
+      console.debug("Collecting position ...");
+
+      navigator.geolocation.getCurrentPosition(function(position) {
+        $scope.fetchFacts(position.coords.latitude, position.coords.longitude);
       },
       function(error) {
         console.error("Failed to get location: ", error);
         window.radar.show_sweep = false;
       });
     }
+
+
+    $timeout(function() {
+      $scope.fetchFacts(-37.5, 143.8);
+    }, 1000);
   }]);
 
 var radar = document.getElementById('radar'),
