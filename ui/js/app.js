@@ -122,10 +122,9 @@ angular.module('factr', ['toggle-switch'])
           // decorate sentence 
           $http({
             method:   'POST',
-            dataType: 'json',
-            headers:  {'Content-Type': 'application/json; charset=UTF-8'},
-            url:      url_s,
-            data:     $scope.facts
+            url:      url+'json/sentence',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            data: "request="+JSON.stringify($scope.facts)
           }).then(function(response){
             // store and redirect
             angular.forEach(response.data, function(v, k) {
