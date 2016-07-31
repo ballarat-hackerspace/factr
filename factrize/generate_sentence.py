@@ -21,13 +21,27 @@ reply_forms_time.append("Did you know that on {time_period}, the {category} near
 reply_forms_time.append("There's a {singular} just {distance} metres from you. {quip}")
 
 reply_forms_avg = []
-reply_forms_avg.append("The average {category} in this area is $value. {quip}")
-reply_forms_avg.append("There's a {singular} just {distance} metres from you. {quip}")
+reply_forms_avg.append("The average {singular} in this area is {value}. {quip}")
+#reply_forms_avg.append("There's a {singular} just {distance} metres from you. {quip}")
 
 reply_forms_sum = []
-#reply_forms_sum.append("In total {category} in this area is $value. {quip}")
-reply_forms_sum.append("Over the last {time_period} days, nearby {plural} has totalled {value}. {quip}")
-reply_forms_sum.append("There's a {singular} just {distance} metres from you. {quip}")
+reply_forms_sum.append("Over the last {time_period} days, nearby {plural} have totalled {value}. {quip}")
+#reply_forms_sum.append("There's a {singular} just {distance} metres from you. {quip}")
+#reply_forms_sum.append("There's a {singular} just {distance} metres from you. {quip}")
+
+reply_forms_count = []
+reply_forms_count.append("There's a {singular} just {distance} metres from you. {quip}")
+reply_forms_count.append("Despite what the government might say, there are {value} {plural} within walking distance of you. {quip}")
+reply_forms_count.append("I walked around counting on my fingers and there are {value} {plural} nearby. {quip}")
+reply_forms_count.append("I walked around counting on my fingers and there are {value} {plural} nearby. {quip}")
+
+reply_forms_count_time = []
+reply_forms_count_time.append("There's a {singular} just {distance} metres from you. {quip}")
+reply_forms_count_time.append("Ohh look it's a Poke gym! No wait, that's just the {singular} that's {distance} metres from you. {quip}")
+reply_forms_count_time.append("Despite what the government might say, there are {value} {plural} within walking distance of you. {quip}")
+
+reply_forms_common = []
+reply_forms_common.append("The most common {value_name} of a {singular} around here is {value}. {quip}")
 
 def generate_sentence(input_data):
 
@@ -45,15 +59,20 @@ def generate_sentence(input_data):
         distance = ""
     
     value = input_data['value']
+    value_name = input_data['value_name']
 
     # IBM Watson (or similar) goes here, but the training couldn't be done to a reliable level in time.
     reply_options = None
     if awesome_sentence_generation_not_working:
-        if "avg" in data_type:
+        if "average" in data_type:
             reply_options = reply_forms_avg
         # Choose either a temporal or non-temporal type
         elif "sum" in data_type:
             reply_options = reply_forms_sum
+        elif "count" in data_type:
+            reply_options = reply_forms_count
+        elif "common" in data_type:
+            reply_options = reply_forms_common
         elif "datetime" in input_data and input_data['datetime']:
             reply_options = reply_forms_time
             # Format datetime to be human readable
@@ -69,4 +88,4 @@ def generate_sentence(input_data):
     # Choose a reply form at random and populate it
     return random.choice(reply_options).format(category=category, attribute=attribute,
                                                value=value, time_period=time_period, plural=plural,
-                                               distance=distance, singular=singular, quip=quip)
+                                               distance=distance, singular=singular, quip=quip, value_name=value_name)
